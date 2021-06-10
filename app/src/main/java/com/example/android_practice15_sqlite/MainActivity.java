@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.tv_display_employees:
                 // navigate to Employees activity
-                //startActivity(new Intent(this, EmployeeActivity.class));
+                startActivity(new Intent(this, EmployeeActivity.class));
                 break;
         }
     }
