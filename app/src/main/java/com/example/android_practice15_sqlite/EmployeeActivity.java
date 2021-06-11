@@ -8,13 +8,15 @@ import android.os.Bundle;
 import android.widget.ListView;
 
 import com.example.android_practice15_sqlite.model.Employee;
+import com.example.android_practice15_sqlite.util.DatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeActivity extends AppCompatActivity {
 
-    SQLiteDatabase sqLiteDatabase;
+    //SQLiteDatabase sqLiteDatabase;
+    DatabaseHelper databaseHelper;
 
     List<Employee> employeeList;
     ListView employeeListView;
@@ -27,13 +29,17 @@ public class EmployeeActivity extends AppCompatActivity {
         employeeListView = findViewById(R.id.lv_employees);
         employeeList = new ArrayList<>();
 
-        sqLiteDatabase = openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+        //sqLiteDatabase = openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+
+        databaseHelper = new DatabaseHelper(this);
         loadEmployees();
     }
 
     private void loadEmployees() {
-        String sql = "SELECT * FROM employee";
-        Cursor cursor = sqLiteDatabase.rawQuery(sql, null);
+        /*String sql = "SELECT * FROM employee";
+        Cursor cursor = sqLiteDatabase.rawQuery(sql, null);*/
+
+        Cursor cursor = databaseHelper.getAllEmployees();
         if (cursor.moveToFirst()) {
             do {
                 // create an employee instance
@@ -49,9 +55,13 @@ public class EmployeeActivity extends AppCompatActivity {
         }
 
         // create an adapter to display the employees
+        /*EmployeeAdapter employeeAdapter = new EmployeeAdapter(this,
+                R.layout.list_layout_employee,
+                employeeList, sqLiteDatabase);*/
+
         EmployeeAdapter employeeAdapter = new EmployeeAdapter(this,
                 R.layout.list_layout_employee,
-                employeeList, sqLiteDatabase);
+                employeeList, databaseHelper);
         employeeListView.setAdapter(employeeAdapter);
 
     }

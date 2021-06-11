@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.android_practice15_sqlite.model.Employee;
+import com.example.android_practice15_sqlite.util.DatabaseHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,16 +29,27 @@ public class EmployeeAdapter extends ArrayAdapter {
     Context context;
     int layoutRes;
     List<Employee> employeeList;
-    SQLiteDatabase sqLiteDatabase;
+    //SQLiteDatabase sqLiteDatabase;
 
 
-    public EmployeeAdapter(@NonNull Context context, int resource, List<Employee> employeeList, SQLiteDatabase sqLiteDatabase) {
+    /*public EmployeeAdapter(@NonNull Context context, int resource, List<Employee> employeeList, SQLiteDatabase sqLiteDatabase) {
         super(context, resource, employeeList);
 
         this.context = context;
         this.layoutRes = resource;
         this.employeeList = employeeList;
         this.sqLiteDatabase = sqLiteDatabase;
+    }*/
+
+    DatabaseHelper databaseHelper;
+
+    public EmployeeAdapter(@NonNull Context context, int resource, List<Employee> employeeList, DatabaseHelper databaseHelper) {
+        super(context, resource, employeeList);
+
+        this.context = context;
+        this.layoutRes = resource;
+        this.employeeList = employeeList;
+        this.databaseHelper = databaseHelper;
     }
 
     @NonNull
@@ -106,10 +118,14 @@ public class EmployeeAdapter extends ArrayAdapter {
                             return;
                         }
 
-                        String sql = "UPDATE employee SET name=?, department=?, salary=? WHERE id=?";
-                        sqLiteDatabase.execSQL(sql, new String[]{name,department, salary, String.valueOf(employee.getId())});
+                        /*String sql = "UPDATE employee SET name=?, department=?, salary=? WHERE id=?";
+                        sqLiteDatabase.execSQL(sql, new String[]{name,department, salary, String.valueOf(employee.getId())});*/
 
-                        loadEmployees();
+                        if(databaseHelper.updateEmployee(employee.getId(), name, department, Double.parseDouble(salary))){
+                            loadEmployees();
+                        }
+
+                        //loadEmployees();
                         alertDialog.dismiss();
 
                     }
@@ -131,10 +147,14 @@ public class EmployeeAdapter extends ArrayAdapter {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String sql = "DELETE FROM employee WHERE id = ?";
-                        sqLiteDatabase.execSQL(sql, new Integer[]{employee.getId()});
+                        /*String sql = "DELETE FROM employee WHERE id = ?";
+                        sqLiteDatabase.execSQL(sql, new Integer[]{employee.getId()});*/
 
-                        loadEmployees();
+                        //loadEmployees();
+
+                        if(databaseHelper.deleteEmployee((employee.getId()))){
+                            loadEmployees();
+                        }
                     }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -153,8 +173,10 @@ public class EmployeeAdapter extends ArrayAdapter {
     }
 
     private void loadEmployees() {
-        String sql = "SELECT * FROM employee";
-        Cursor cursor = sqLiteDatabase.rawQuery(sql, null);
+        /*String sql = "SELECT * FROM employee";
+        Cursor cursor = sqLiteDatabase.rawQuery(sql, null);*/
+
+        Cursor cursor = databaseHelper.getAllEmployees();
         employeeList.clear();
         if (cursor.moveToFirst()) {
             do {
